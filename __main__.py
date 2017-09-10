@@ -9,15 +9,22 @@ HEIGHT_FIELD = 500
 BUTTON_WIDTH = 10
 BUTTON_HEIGHT = 1
 DESK_SIZE = 8
-cell_size = int(WIDTH_FIELD / DESK_SIZE)
+CELL_SIZE = int(WIDTH_FIELD / DESK_SIZE)
+chosen_tile = 0
+chosen_tile_color = 0
 
 
 def tiles_swapping(event):
-    #print ("Click!", event.x, event.y)
-    event.x -= event.x % cell_size
-    event.y -= event.y % cell_size
-    #print(event.widget.find_closest(event.x, event.y))
-    field.itemconfig(CURRENT, fill = "#FFFFFF")
+    global chosen_tile, chosen_tile_color
+    event.x -= event.x % CELL_SIZE
+    event.y -= event.y % CELL_SIZE
+    if chosen_tile == 0:
+        chosen_tile = field.find_closest(event.x, event.y)
+        chosen_tile_color = field.itemcget(CURRENT, "fill")
+    else:
+        field.itemconfig(chosen_tile, fill=field.itemcget(CURRENT, "fill"))
+        field.itemconfig(CURRENT, fill = chosen_tile_color)
+        chosen_tile, chosen_tile_color = 0, 0
 
 
 newgamebutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "new game")
@@ -31,15 +38,15 @@ for i in range (DESK_SIZE):
     for j in range (DESK_SIZE):
         color = i+j
         if color >= 10:
-            color = ord('a') + color - 9
+            color = ord('a') + color - 10
         else:
             color = ord('0') + color
         color = "#" + chr(color) * 6
         #print(color)
-        field.create_rectangle(i*cell_size, \
-                               j*cell_size, \
-                               (i+1)*cell_size, \
-                                    (j+1)*cell_size, fill = color, tags = ("cell", color))
+        field.create_rectangle(i * CELL_SIZE, \
+                               j * CELL_SIZE, \
+                               (i+1) * CELL_SIZE, \
+                               (j+1) * CELL_SIZE, fill = color, tags = ("cell", color))
 
 
 newgamebutton.grid(row=0)
