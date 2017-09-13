@@ -8,7 +8,7 @@ WIDTH_FIELD = 500
 HEIGHT_FIELD = 500
 BUTTON_WIDTH = 10
 BUTTON_HEIGHT = 1
-DESK_SIZE = 8
+DESK_SIZE = 3
 CELL_SIZE = int(WIDTH_FIELD / DESK_SIZE)
 chosen_tile = 0
 chosen_tile_color = 0
@@ -31,6 +31,18 @@ def desk_generation():
     shuffle(colors)
 
 
+def checking_is_game_finished():
+    for i in range (DESK_SIZE):
+        for j in range (DESK_SIZE):
+            index = i*DESK_SIZE + j
+            # print(field.find_withtag(index+1))
+            # print (field.itemcget(field.find_withtag(index+1), "fill"))
+            # print(colors_in_right_order[index])
+            if field.itemcget(field.find_withtag(index+1), "fill") != colors_in_right_order[index]:
+                return False
+    return True
+
+
 def tiles_swapping(event):
     global chosen_tile, chosen_tile_color
     event.x -= event.x % CELL_SIZE
@@ -42,6 +54,11 @@ def tiles_swapping(event):
         field.itemconfig(chosen_tile, fill=field.itemcget(CURRENT, "fill"))
         field.itemconfig(CURRENT, fill = chosen_tile_color)
         chosen_tile, chosen_tile_color = 0, 0
+        game_is_finished = checking_is_game_finished()
+        if game_is_finished:
+            field.destroy()
+            game_win_text = Label(game, text="The winner you are!")
+            game_win_text.grid(row=1, columnspan=3)
 
 
 newgamebutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "new game")
@@ -49,22 +66,24 @@ savebutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "
 exitbutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "exit game")
 field = Canvas (game, width = WIDTH_FIELD, height = HEIGHT_FIELD)
 field.tag_bind("cell", "<Button-1>", tiles_swapping)
-#print(cell_size)
+# print(cell_size)
 
 
 desk_generation()
-print (colors)
-print (colors_in_right_order)
+# print (colors)
+# print (colors_in_right_order)
 for i in range (DESK_SIZE):
-    #print("---")
+    # print("---")
     for j in range (DESK_SIZE):
-        color = colors[i*DESK_SIZE + j]
-        #print(i, j, color)
-        right_color = colors_in_right_order[i*DESK_SIZE + j]
+        index = i*DESK_SIZE + j
+        color = colors[index]
+        # print(i, j, color)
+        right_color = colors_in_right_order[index]
         field.create_rectangle(i * CELL_SIZE, \
                                j * CELL_SIZE, \
                                (i+1) * CELL_SIZE, \
-                               (j+1) * CELL_SIZE, fill = color, tags = ("cell", right_color))
+                               (j+1) * CELL_SIZE, fill = color, tags = ("cell", index+1, right_color))
+        # print(index, right_color, field.find_withtag(index+1))
 
 
 newgamebutton.grid(row=0)
