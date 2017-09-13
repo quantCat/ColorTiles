@@ -8,11 +8,13 @@ WIDTH_FIELD = 800
 HEIGHT_FIELD = 700
 BUTTON_WIDTH = 10
 BUTTON_HEIGHT = 1
-DESK_WIDTH = 4
-DESK_HEIGHT = 4
+DESK_WIDTH = 3
+DESK_HEIGHT = 3
 # Max size with current algorithm is 8x9
 CELL_WIDTH = int(WIDTH_FIELD / DESK_WIDTH)
 CELL_HEIGHT = int (HEIGHT_FIELD / DESK_HEIGHT)
+HIGHLIGHT_COLOR = "blue"
+
 chosen_tile = 0
 chosen_tile_color = 0
 colors = []
@@ -60,7 +62,7 @@ def tiles_swapping(event):
         chosen_tile_color = field.itemcget(CURRENT, "fill")
         # field.itemconfig(CURRENT, outline="red")
         highlight_coords = field.coords(CURRENT)
-        field.create_rectangle(highlight_coords, fill="", outline="red", tag="highlight")
+        field.create_rectangle(highlight_coords, fill="", outline=HIGHLIGHT_COLOR, tag="highlight")
     else:
         # field.itemconfig(chosen_tile, outline="black")
         field.delete("highlight")
@@ -69,10 +71,12 @@ def tiles_swapping(event):
         chosen_tile, chosen_tile_color = 0, 0
         game_is_finished = checking_is_game_finished()
         if game_is_finished:
-            field.destroy()
-            game_win_text = Label(game, text="A winner is you!")
-            game_win_text.grid(row=1, columnspan=3)
-        field.delete("highlight")
+            # field.destroy()
+            # game_win_text = Label(game, text="A winner is you!")
+            # game_win_text.grid(row=1, columnspan=3)
+            field.create_text(WIDTH_FIELD/2, HEIGHT_FIELD/2, anchor="center", font=("Purisa", 40),\
+                              text="A WINNER IS YOU!", fill=HIGHLIGHT_COLOR)
+            field.config(state="disabled")
 
 
 newgamebutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "new game")
