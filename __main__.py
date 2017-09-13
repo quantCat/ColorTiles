@@ -8,8 +8,8 @@ WIDTH_FIELD = 800
 HEIGHT_FIELD = 700
 BUTTON_WIDTH = 10
 BUTTON_HEIGHT = 1
-DESK_WIDTH = 8
-DESK_HEIGHT = 9
+DESK_WIDTH = 4
+DESK_HEIGHT = 4
 # Max size with current algorithm is 8x9
 CELL_WIDTH = int(WIDTH_FIELD / DESK_WIDTH)
 CELL_HEIGHT = int (HEIGHT_FIELD / DESK_HEIGHT)
@@ -58,15 +58,21 @@ def tiles_swapping(event):
     if chosen_tile == 0:
         chosen_tile = field.find_closest(event.x, event.y)
         chosen_tile_color = field.itemcget(CURRENT, "fill")
+        # field.itemconfig(CURRENT, outline="red")
+        highlight_coords = field.coords(CURRENT)
+        field.create_rectangle(highlight_coords, fill="", outline="red", tag="highlight")
     else:
+        # field.itemconfig(chosen_tile, outline="black")
+        field.delete("highlight")
         field.itemconfig(chosen_tile, fill=field.itemcget(CURRENT, "fill"))
-        field.itemconfig(CURRENT, fill = chosen_tile_color)
+        field.itemconfig(CURRENT, fill=chosen_tile_color)
         chosen_tile, chosen_tile_color = 0, 0
         game_is_finished = checking_is_game_finished()
         if game_is_finished:
             field.destroy()
-            game_win_text = Label(game, text="The winner you are!")
+            game_win_text = Label(game, text="A winner is you!")
             game_win_text.grid(row=1, columnspan=3)
+        field.delete("highlight")
 
 
 newgamebutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "new game")
