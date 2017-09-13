@@ -4,22 +4,28 @@ from tkinter import *
 from random import *
 
 game = Tk()
-WIDTH_FIELD = 500
-HEIGHT_FIELD = 500
+WIDTH_FIELD = 800
+HEIGHT_FIELD = 700
 BUTTON_WIDTH = 10
 BUTTON_HEIGHT = 1
-DESK_SIZE = 3
-CELL_SIZE = int(WIDTH_FIELD / DESK_SIZE)
+DESK_WIDTH = 8
+DESK_HEIGHT = 9
+# Max size with current algorithm is 8x9
+CELL_WIDTH = int(WIDTH_FIELD / DESK_WIDTH)
+CELL_HEIGHT = int (HEIGHT_FIELD / DESK_HEIGHT)
 chosen_tile = 0
 chosen_tile_color = 0
 colors = []
 colors_in_right_order = []
 
+# TODO:
+# various desks generating
+
 
 def desk_generation():
     global colors, colors_in_right_order
-    for i in range(DESK_SIZE):
-        for j in range(DESK_SIZE):
+    for i in range(DESK_WIDTH):
+        for j in range(DESK_HEIGHT):
             color = i + j
             if color >= 10:
                 color = ord('a') + color - 10
@@ -27,14 +33,16 @@ def desk_generation():
                 color = ord('0') + color
             color = "#" + chr(color) * 6
             colors_in_right_order.append(color);
+            # print(color, end=' ')
+        # print()
     colors = list(colors_in_right_order)
     shuffle(colors)
 
 
 def checking_is_game_finished():
-    for i in range (DESK_SIZE):
-        for j in range (DESK_SIZE):
-            index = i*DESK_SIZE + j
+    for i in range (DESK_WIDTH):
+        for j in range (DESK_HEIGHT):
+            index = i*DESK_HEIGHT + j
             # print(field.find_withtag(index+1))
             # print (field.itemcget(field.find_withtag(index+1), "fill"))
             # print(colors_in_right_order[index])
@@ -45,8 +53,8 @@ def checking_is_game_finished():
 
 def tiles_swapping(event):
     global chosen_tile, chosen_tile_color
-    event.x -= event.x % CELL_SIZE
-    event.y -= event.y % CELL_SIZE
+    event.x -= event.x % CELL_WIDTH
+    event.y -= event.y % CELL_HEIGHT
     if chosen_tile == 0:
         chosen_tile = field.find_closest(event.x, event.y)
         chosen_tile_color = field.itemcget(CURRENT, "fill")
@@ -70,20 +78,17 @@ field.tag_bind("cell", "<Button-1>", tiles_swapping)
 
 
 desk_generation()
-# print (colors)
-# print (colors_in_right_order)
-for i in range (DESK_SIZE):
-    # print("---")
-    for j in range (DESK_SIZE):
-        index = i*DESK_SIZE + j
+for i in range (DESK_WIDTH):
+    for j in range (DESK_HEIGHT):
+        index = i*DESK_HEIGHT + j
         color = colors[index]
-        # print(i, j, color)
         right_color = colors_in_right_order[index]
-        field.create_rectangle(i * CELL_SIZE, \
-                               j * CELL_SIZE, \
-                               (i+1) * CELL_SIZE, \
-                               (j+1) * CELL_SIZE, fill = color, tags = ("cell", index+1, right_color))
-        # print(index, right_color, field.find_withtag(index+1))
+        field.create_rectangle(i * CELL_WIDTH, \
+                               j * CELL_HEIGHT, \
+                               (i+1) * CELL_WIDTH, \
+                               (j+1) * CELL_HEIGHT, fill = color, tags = ("cell", index+1, right_color))
+        # print (index, color, end=' ')
+    # print()
 
 
 newgamebutton.grid(row=0)
