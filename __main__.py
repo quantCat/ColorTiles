@@ -29,9 +29,9 @@ corner_colors = {'ul': generate_color(), 'ur': generate_color(), 'll': generate_
 
 
 def checking_is_game_finished():
-    for i in range (desk_width):
-        for j in range (desk_height):
-            index = i*desk_height + j
+    for i in range(desk_width):
+        for j in range(desk_height):
+            index = i * desk_height + j
             if field.itemcget(field.find_withtag(index+1), "fill") != colors_in_right_order[index]:
                 return False
     return True
@@ -49,18 +49,18 @@ def desk_generation():
     global colors, colors_in_right_order
     for i in range(desk_width):
 
-        color1r = (corner_colors['ul'][0] * (desk_height-1-i) + corner_colors['ll'][0] * i) // (desk_height-1)
-        color1g = (corner_colors['ul'][1] * (desk_height-1-i) + corner_colors['ll'][1] * i) // (desk_height-1)
-        color1b = (corner_colors['ul'][2] * (desk_height-1-i) + corner_colors['ll'][2] * i) // (desk_height-1)
+        color1r = (corner_colors['ul'][0] * (desk_height - 1 - i) + corner_colors['ll'][0] * i) // (desk_height - 1)
+        color1g = (corner_colors['ul'][1] * (desk_height - 1 - i) + corner_colors['ll'][1] * i) // (desk_height - 1)
+        color1b = (corner_colors['ul'][2] * (desk_height - 1 - i) + corner_colors['ll'][2] * i) // (desk_height - 1)
 
-        color2r = (corner_colors['ur'][0] * (desk_height-1-i) + corner_colors['lr'][0] * i) // (desk_height-1)
-        color2g = (corner_colors['ur'][1] * (desk_height-1-i) + corner_colors['lr'][1] * i) // (desk_height-1)
-        color2b = (corner_colors['ur'][2] * (desk_height-1-i) + corner_colors['lr'][2] * i) // (desk_height-1)
+        color2r = (corner_colors['ur'][0] * (desk_height - 1 - i) + corner_colors['lr'][0] * i) // (desk_height - 1)
+        color2g = (corner_colors['ur'][1] * (desk_height - 1 - i) + corner_colors['lr'][1] * i) // (desk_height - 1)
+        color2b = (corner_colors['ur'][2] * (desk_height - 1 - i) + corner_colors['lr'][2] * i) // (desk_height - 1)
 
         for j in range(desk_height):
-            color = (color1r * (desk_width-1 - j) + color2r * j) // (desk_width-1)
+            color = (color1r * (desk_width - 1 - j) + color2r * j) // (desk_width - 1)
             color *= 256
-            color += (color1g * (desk_width-1 - j) + color2g * j) // (desk_width-1)
+            color += (color1g * (desk_width - 1 - j) + color2g * j) // (desk_width - 1)
             color *= 256
             color += (color1b * (desk_width - 1 - j) + color2b * j) // (desk_width - 1)
 
@@ -71,8 +71,8 @@ def desk_generation():
     shuffle(colors)
 
 
-def color_marks_coords (rectangle_coords):
-    print (rectangle_coords)
+def color_marks_coords(rectangle_coords):
+    print(rectangle_coords)
     oval_rad1 = CELL_WIDTH//6
     oval_rad2 = CELL_HEIGHT//6
     x_center = (rectangle_coords[0] + rectangle_coords[2]) / 2.0
@@ -98,7 +98,7 @@ def desk_creating(_event):
                       fill=colors_in_right_order[0],
                       outline=HIGHLIGHT_COLOR, tag="color_mark")  # nw
     field.create_oval(color_marks_coords(field.coords(desk_height)),
-                      fill=colors_in_right_order[desk_height-1],
+                      fill=colors_in_right_order[desk_height - 1],
                       outline=HIGHLIGHT_COLOR, tag="color_mark")  # sw
     field.create_oval(color_marks_coords(field.coords((desk_height * (desk_width - 1) + 1))),
                       fill=colors_in_right_order[(desk_height * (desk_width - 1))],
