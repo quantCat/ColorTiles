@@ -25,6 +25,7 @@ chosen_tile = 0
 chosen_tile_color = 0
 colors = []
 colors_in_right_order = []
+corner_colors = {}
 
 
 def checking_is_game_finished():
@@ -45,7 +46,7 @@ def game_finishing():
 
 
 def desk_generation():
-    global colors, colors_in_right_order
+    global colors, colors_in_right_order, corner_colors
     corner_colors = {'ul': generate_color(), 'ur': generate_color(), 'll': generate_color(), 'lr': generate_color()}
     for i in range(desk_width):
 
@@ -58,14 +59,11 @@ def desk_generation():
         color2b = (corner_colors['ur'][2] * (desk_height - 1 - i) + corner_colors['lr'][2] * i) // (desk_height - 1)
 
         for j in range(desk_height):
-            color = (color1r * (desk_width - 1 - j) + color2r * j) // (desk_width - 1)
-            color *= 256
-            color += (color1g * (desk_width - 1 - j) + color2g * j) // (desk_width - 1)
-            color *= 256
-            color += (color1b * (desk_width - 1 - j) + color2b * j) // (desk_width - 1)
+            colorr = (color1r * (desk_width - 1 - j) + color2r * j) // (desk_width - 1)
+            colorg = (color1g * (desk_width - 1 - j) + color2g * j) // (desk_width - 1)
+            colorb = (color1b * (desk_width - 1 - j) + color2b * j) // (desk_width - 1)
 
-            colors_in_right_order.append('#%06X' % color)
-            print(format(color, '06x'), end=' ')
+            colors_in_right_order.append('#{}'.format(bytes([colorr, colorg, colorb]).hex()))
         print()
     colors = list(colors_in_right_order)
     shuffle(colors)
@@ -95,16 +93,16 @@ def desk_creating(_event):
             # print (index, color, end=' ')
             # print()
     field.create_oval(color_marks_coords(field.coords(1)),
-                      fill=colors_in_right_order[0],
+                      fill='#{}'.format(bytes(corner_colors['ul']).hex()),
                       outline=HIGHLIGHT_COLOR, tag="color_mark")  # nw
     field.create_oval(color_marks_coords(field.coords(desk_height)),
-                      fill=colors_in_right_order[desk_height - 1],
+                      fill='#{}'.format(bytes(corner_colors['ur']).hex()),
                       outline=HIGHLIGHT_COLOR, tag="color_mark")  # sw
     field.create_oval(color_marks_coords(field.coords((desk_height * (desk_width - 1) + 1))),
-                      fill=colors_in_right_order[(desk_height * (desk_width - 1))],
+                      fill='#{}'.format(bytes(corner_colors['ll']).hex()),
                       outline=HIGHLIGHT_COLOR, tag="color_mark")  # ne
     field.create_oval(color_marks_coords(field.coords(desk_height * desk_width)),
-                      fill=colors_in_right_order[desk_height * desk_width - 1],
+                      fill='#{}'.format(bytes(corner_colors['lr']).hex()),
                       outline=HIGHLIGHT_COLOR, tag="color_mark")  # se
 
 
