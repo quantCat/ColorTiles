@@ -25,7 +25,6 @@ chosen_tile = 0
 chosen_tile_color = 0
 colors = []
 colors_in_right_order = []
-corner_colors = {'ul': generate_color(), 'ur': generate_color(), 'll': generate_color(), 'lr': generate_color()}
 
 
 def checking_is_game_finished():
@@ -47,6 +46,7 @@ def game_finishing():
 
 def desk_generation():
     global colors, colors_in_right_order
+    corner_colors = {'ul': generate_color(), 'ur': generate_color(), 'll': generate_color(), 'lr': generate_color()}
     for i in range(desk_width):
 
         color1r = (corner_colors['ul'][0] * (desk_height - 1 - i) + corner_colors['ll'][0] * i) // (desk_height - 1)
