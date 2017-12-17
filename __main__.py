@@ -2,6 +2,7 @@
 
 from tkinter import *
 from tkinter import messagebox
+from tkinter import simpledialog
 from random import *
 
 game = Tk()
@@ -14,7 +15,7 @@ desk_width = 3
 desk_height = 3
 # Max size with current algorithm is 8x9
 CELL_WIDTH = int(WIDTH_FIELD / desk_width)
-CELL_HEIGHT = int (HEIGHT_FIELD / desk_height)
+CELL_HEIGHT = int(HEIGHT_FIELD / desk_height)
 HIGHLIGHT_COLOR = "blue"
 
 
@@ -48,6 +49,8 @@ def game_finishing():
 
 def desk_generation():
     global colors, colors_in_right_order, corner_colors
+    colors.clear()
+    colors_in_right_order.clear()
     corner_colors = {'ul': generate_color(), 'ur': generate_color(), 'll': generate_color(), 'lr': generate_color()}
     for i in range(desk_width):
 
@@ -65,13 +68,12 @@ def desk_generation():
             colorb = (color1b * (desk_width - 1 - j) + color2b * j) // (desk_width - 1)
 
             colors_in_right_order.append('#{}'.format(bytes([colorr, colorg, colorb]).hex()))
-        print()
     colors = list(colors_in_right_order)
     shuffle(colors)
 
 
 def color_marks_coords(rectangle_coords):
-    print(rectangle_coords)
+    # print(rectangle_coords)
     oval_rad1 = CELL_WIDTH//6
     oval_rad2 = CELL_HEIGHT//6
     x_center = (rectangle_coords[0] + rectangle_coords[2]) / 2.0
@@ -81,7 +83,17 @@ def color_marks_coords(rectangle_coords):
 
 
 def desk_creating(_event):
+    global desk_width, desk_height, moves, CELL_HEIGHT, CELL_WIDTH
+    desk_width = simpledialog.askinteger\
+        ("Enter width", "Please enter the width of the desk in cells", minvalue=1, maxvalue=30)
+    desk_height = simpledialog.askinteger\
+        ("Enter height", "Please enter the height of the desk in cells", minvalue=1, maxvalue=30)
+    CELL_WIDTH = int(WIDTH_FIELD / desk_width)
+    CELL_HEIGHT = int(HEIGHT_FIELD / desk_height)
+    field.delete("greeting")
     desk_generation()
+    moves = 0
+    field.config(state="normal")
     for i in range(desk_width):
         for j in range(desk_height):
             index = i * desk_height + j
@@ -91,8 +103,8 @@ def desk_creating(_event):
                                    j * CELL_HEIGHT,
                                    (i + 1) * CELL_WIDTH,
                                    (j + 1) * CELL_HEIGHT, fill=color, tags=("cell", index + 1, right_color))
-            # print (index, color, end=' ')
-            # print()
+            print (index, color, end=' ')
+            print()
     field.create_oval(color_marks_coords(field.coords(1)),
                       fill='#{}'.format(bytes(corner_colors['ul']).hex()),
                       outline=HIGHLIGHT_COLOR, tag="color_mark")  # nw
@@ -142,9 +154,10 @@ def tiles_swapping(event):
     else:
         # field.itemconfig(chosen_tile, outline="black")
         field.delete("highlight")
-        field.itemconfig(chosen_tile, fill=field.itemcget(CURRENT, "fill"))
-        field.itemconfig(CURRENT, fill=chosen_tile_color)
-        moves += 1
+        if field.itemcget(CURRENT, "fill") != chosen_tile_color:
+            moves += 1
+            field.itemconfig(chosen_tile, fill=field.itemcget(CURRENT, "fill"))
+            field.itemconfig(CURRENT, fill=chosen_tile_color)
         chosen_tile, chosen_tile_color = 0, 0
         game_is_finished = checking_is_game_finished()
         if game_is_finished:
@@ -168,4 +181,7 @@ loadbutton.grid(row=0, column=1)
 savebutton.grid(row=0, column=2)
 exitbutton.grid(row=0, column=3)
 field.grid(row=1, columnspan=4)
+#field.create_text(WIDTH_FIELD / 2, HEIGHT_FIELD / 2, anchor="center", font=("Purisa", 20), \
+ #                     text="Press 'New game'\n to start a new game", fill=HIGHLIGHT_COLOR, tag='greeting')
+
 game.mainloop()
