@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from tkinter import *
+from tkinter import messagebox
 from random import *
 
 game = Tk()
@@ -106,6 +107,28 @@ def desk_creating(_event):
                       outline=HIGHLIGHT_COLOR, tag="color_mark")  # se
 
 
+def load_game(_event):
+    global colors, colors_in_right_order
+    try:
+        with open("save.txt", "a") as f:
+            colors_in_right_order = f.readline().split(" ")
+            colors = f.readline().split(" ")
+    except FileExistsError:
+        print ("No saved game")
+
+
+def save_game(_event):
+    text2save = " ".join(colors_in_right_order)+"\n"+" ".join(colors)
+    print(text2save)
+    with open("save.txt", "a") as f:
+        f.write(text2save)
+
+
+def quit_game(_event):
+    if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
+        game.destroy()
+
+
 def tiles_swapping(event):
     global chosen_tile, chosen_tile_color, moves
     event.x -= event.x % CELL_WIDTH
@@ -128,16 +151,21 @@ def tiles_swapping(event):
             game_finishing()
 
 
-newgamebutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "new game")
+newbutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text ="new game")
+loadbutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "load game")
 savebutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "save game")
 exitbutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "exit game")
 field = Canvas (game, width = WIDTH_FIELD, height = HEIGHT_FIELD)
 field.tag_bind("cell", "<Button-1>", tiles_swapping)
-newgamebutton.bind("<Button-1>", desk_creating)
+newbutton.bind("<Button-1>", desk_creating)
+loadbutton.bind("<Button-1>", load_game)
+savebutton.bind("<Button-1>", save_game)
+exitbutton.bind("<Button-1>", quit_game)
 # print(cell_size)
 
-newgamebutton.grid(row=0)
-savebutton.grid(row=0, column=1)
-exitbutton.grid(row=0, column=2)
-field.grid(row=1, columnspan=3)
+newbutton.grid(row=0)
+loadbutton.grid(row=0, column=1)
+savebutton.grid(row=0, column=2)
+exitbutton.grid(row=0, column=3)
+field.grid(row=1, columnspan=4)
 game.mainloop()
