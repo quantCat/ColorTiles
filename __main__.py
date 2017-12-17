@@ -81,7 +81,7 @@ def color_marks_coords (rectangle_coords):
     return circle_coords
 
 
-def desk_creating():
+def desk_creating(_event):
     desk_generation()
     for i in range(DESK_WIDTH):
         for j in range(DESK_HEIGHT):
