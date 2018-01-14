@@ -47,12 +47,19 @@ def game_finishing():
     field.config(state="disabled")
 
 
-def desk_generation():
-    global colors, colors_in_right_order, corner_colors
+def desk_generation(_event):
+    global colors, colors_in_right_order, desk_width, desk_height, corner_colors, CELL_HEIGHT, CELL_WIDTH
+    desk_width = simpledialog.askinteger\
+        ("Enter width", "Please enter the width of the desk in cells", minvalue=3, maxvalue=30)
+    desk_height = simpledialog.askinteger\
+        ("Enter height", "Please enter the height of the desk in cells", minvalue=3, maxvalue=30)
+    CELL_WIDTH = int(WIDTH_FIELD / desk_width)
+    CELL_HEIGHT = int(HEIGHT_FIELD / desk_height)
+    field.delete("greeting")
     colors.clear()
     colors_in_right_order.clear()
     corner_colors = {'ul': generate_color(), 'ur': generate_color(), 'll': generate_color(), 'lr': generate_color()}
-    for i in range(desk_width):
+    for i in range(desk_height):
 
         color1r = (corner_colors['ul'][0] * (desk_height - 1 - i) + corner_colors['ll'][0] * i) // (desk_height - 1)
         color1g = (corner_colors['ul'][1] * (desk_height - 1 - i) + corner_colors['ll'][1] * i) // (desk_height - 1)
@@ -62,14 +69,15 @@ def desk_generation():
         color2g = (corner_colors['ur'][1] * (desk_height - 1 - i) + corner_colors['lr'][1] * i) // (desk_height - 1)
         color2b = (corner_colors['ur'][2] * (desk_height - 1 - i) + corner_colors['lr'][2] * i) // (desk_height - 1)
 
-        for j in range(desk_height):
+        for j in range(desk_width):
             colorr = (color1r * (desk_width - 1 - j) + color2r * j) // (desk_width - 1)
             colorg = (color1g * (desk_width - 1 - j) + color2g * j) // (desk_width - 1)
             colorb = (color1b * (desk_width - 1 - j) + color2b * j) // (desk_width - 1)
-
+            print("color generation: ", colorr, colorg, colorb)
             colors_in_right_order.append('#{}'.format(bytes([colorr, colorg, colorb]).hex()))
     colors = list(colors_in_right_order)
     shuffle(colors)
+    desk_creating()
 
 
 def color_marks_coords(rectangle_coords):
@@ -82,16 +90,8 @@ def color_marks_coords(rectangle_coords):
     return circle_coords
 
 
-def desk_creating(_event):
-    global desk_width, desk_height, moves, CELL_HEIGHT, CELL_WIDTH
-    desk_width = simpledialog.askinteger\
-        ("Enter width", "Please enter the width of the desk in cells", minvalue=1, maxvalue=30)
-    desk_height = simpledialog.askinteger\
-        ("Enter height", "Please enter the height of the desk in cells", minvalue=1, maxvalue=30)
-    CELL_WIDTH = int(WIDTH_FIELD / desk_width)
-    CELL_HEIGHT = int(HEIGHT_FIELD / desk_height)
-    field.delete("greeting")
-    desk_generation()
+def desk_creating():
+    global desk_width, desk_height, moves
     moves = 0
     field.config(state="normal")
     for i in range(desk_width):
@@ -122,17 +122,18 @@ def desk_creating(_event):
 def load_game(_event):
     global colors, colors_in_right_order
     try:
-        with open("save.txt", "a") as f:
-            colors_in_right_order = f.readline().split(" ")
-            colors = f.readline().split(" ")
+        with open("save.txt", "r") as f:
+            colors_in_right_order = f.readline().strip().split(" ")
+            colors = f.readline().strip().split(" ")
+            desk_creating()
     except FileExistsError:
-        print ("No saved game")
+        print("No saved game")
 
 
 def save_game(_event):
     text2save = " ".join(colors_in_right_order)+"\n"+" ".join(colors)
     print(text2save)
-    with open("save.txt", "a") as f:
+    with open("save.txt", "w") as f:
         f.write(text2save)
 
 
@@ -170,7 +171,7 @@ savebutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "
 exitbutton = Button(game, width = BUTTON_WIDTH, height = BUTTON_HEIGHT, text = "exit game")
 field = Canvas (game, width = WIDTH_FIELD, height = HEIGHT_FIELD)
 field.tag_bind("cell", "<Button-1>", tiles_swapping)
-newbutton.bind("<Button-1>", desk_creating)
+newbutton.bind("<Button-1>", desk_generation)
 loadbutton.bind("<Button-1>", load_game)
 savebutton.bind("<Button-1>", save_game)
 exitbutton.bind("<Button-1>", quit_game)
